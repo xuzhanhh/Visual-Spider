@@ -1,0 +1,16 @@
+@import '~antd/dist/antd.css';
+
+.content{
+    display: flex
+}
+.dag-area{
+    display: flex;
+    flex-flow: column;
+    flex: 1;
+}
+.proppane{
+    height: 55%;
+    width: 100%;
+    background: white;
+    border: 1px solid #eee;
+}
