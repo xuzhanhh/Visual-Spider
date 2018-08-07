@@ -248,24 +248,34 @@ export default class App extends React.Component {
 
     ];
   }
-  _generateProcess = () => {
+  _generateProcess = async () => {
     const { nodes, connections } = this.state
     let nodeObj = nodes.reduce((before, current) => { before[current.id] = current; return before; }, {})
     let connectionObj = connections.reduce((before, current) => { before[current.sourceId] = current; return before; }, {})
     // console.log(nodeObj, connectionObj)
-    let ret = []
+    let configData = []
     let currentConnection = connectionObj[connectionObj['start'].sourceId]
-    ret.push(nodeObj[currentConnection.sourceId].config)
+    configData.push(nodeObj[currentConnection.sourceId].config)
     for (; ;) {
       let currentNode = nodeObj[currentConnection.targetId]
       //待优化 here
-      ret.push(currentNode.config)
+      configData.push(currentNode.config)
       if (currentConnection.targetId === "end") {
         break
       }
       currentConnection = connectionObj[currentConnection.targetId]
     }
-    console.log(JSON.stringify(ret))
+    console.log(JSON.stringify({configData}))
+
+    let returnData = await fetch('/test', {
+      body: JSON.stringify({configData}),
+      headers: {
+        'content-type': 'application/json'
+      },
+      method: 'POST',
+    }).then(response => response.json())
+    // console.log(JSON.stringify(ret))
+    console.log(returnData)
   }
   saveProps = (id, data) => {
     let { curIndex, nodes } = this.state
