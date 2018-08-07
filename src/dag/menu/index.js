@@ -11,11 +11,17 @@ export default class Sider extends React.Component {
     switch(e.key){
         case 'openPage':
             // onClick.bind(null,'transform')
+            // console.log('openPage')
+            alert('openPage')
             onClick('transform', 'openPage')
             break
         case 'evaluate':
             // onClick.bind(null,'transform')
             onClick('transform', 'evaluate')
+            break
+        case 'getData':
+            // onClick.bind(null,'transform')
+            onClick('transform', 'getData')
             break
     }
 
@@ -36,7 +42,8 @@ export default class Sider extends React.Component {
           {/* </MenuItemGroup> */}
           {/* <MenuItemGroup key="g2" title="Item 2"> */}
             <Menu.Item key="openPage">打开页面</Menu.Item>
-            <Menu.Item key="click">点击事件</Menu.Item>
+            <Menu.Item key="click">点击</Menu.Item>
+            <Menu.Item key="getData">获取数据</Menu.Item>
             <Menu.Item key="2">滚动事件</Menu.Item>
             <Menu.Item key="evaluate">执行代码</Menu.Item>
           {/* </MenuItemGroup> */}
@@ -49,7 +56,7 @@ export default class Sider extends React.Component {
             <Menu.Item key="8">Option 8</Menu.Item>
           </SubMenu> */}
         </SubMenu>
-        <SubMenu key="sub4" title={<span><Icon type="setting" /><span>Navigation Three</span></span>}>
+        <SubMenu key="sub4" title={<span><Icon type="setting" /><span>流程</span></span>}>
           <Menu.Item key="9">Option 9</Menu.Item>
           <Menu.Item key="10">Option 10</Menu.Item>
           <Menu.Item key="11">Option 11</Menu.Item>

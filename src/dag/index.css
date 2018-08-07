@@ -12,5 +12,9 @@
     height: 55%;
     width: 100%;
     background: white;
-    border: 1px solid #eee;
+    border: 1px solid #eee
+}
+.proppane-title{
+    display: flex;
+    justify-content: space-between;
 }

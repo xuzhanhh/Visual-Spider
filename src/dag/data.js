@@ -1,12 +1,12 @@
 export const data = {
   connections: [
     {
-      sourceId: "1",
+      sourceId: "start",
       targetId: "2",
     },
     {
       sourceId: "2",
-      targetId: "end-1",
+      targetId: "end",
     },
     // {
     //   data: {
@@ -30,13 +30,15 @@ export const data = {
   nodes: [
     {
       config: {
+        actualType: 'start',
         label: "Start Here",
         type: "source",
       },
-      id: "1",
+      id: "start",
     },
     {
       config: {
+        actualType: 'openPage',
         label: "Open Page",
         type: "transform",
       },
@@ -72,10 +74,11 @@ export const data = {
     // },
     {
       config: {
+        actualType:'end',
         label: "spider finish",
         type: "end"
       },
-      id: "end-1"
+      id: "end"
     }
   ],
 };

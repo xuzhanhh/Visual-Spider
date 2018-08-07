@@ -20,7 +20,7 @@ import NodeType1 from "./components/NodeType1/wrapper";
 import NodeType2 from "./components/NodeType2";
 import NodeType3 from "./components/NodeType3";
 import EndType from "./components/EndType";
-import { css } from "glamor";
+import { css, before } from "glamor";
 import dagre from "dagre";
 import { data } from "./data";
 import { cloneDeep } from 'lodash'
@@ -179,49 +179,13 @@ export default class App extends React.Component {
     }
   };
   render() {
-    const { curBlock } = this.state 
+    const { curBlock, curIndex } = this.state
     console.log(this.state.nodes, this.state.connections)
     return [
       <h1 className={`${headerStyles}`} key="title">
         Visible spider with React DAG
       </h1>,
       <div className={`${ButtonPanelStyles}`} key="Button-panel">
-        {/* <Button
-          // className={`${ButtonStyles} ${nodeType1Styles}`}
-          onClick={this.addNode.bind(null, "transform")}
-        >
-          Add Node Type 1
-      </Button>
-        <Button
-          // className={`${ButtonStyles} ${nodeType2Styles}`}
-          onClick={this.addNode.bind(null, "action")}
-        >
-          Add Node Type 2
-      </Button>
-        <Button
-          // className={`${ButtonStyles} ${nodeType3Styles}`}
-          onClick={this.addNode.bind(null, "condition")}
-        >
-          Add Node Type 3
-      </Button>
-        <Button
-          // className={`${ButtonStyles}`}
-          onClick={this.addNode.bind(null, "source")}
-        >
-          Add Node Type 4
-      </Button>
-        <Button
-          // className={`${ButtonStyles} ${nodeType1Styles}`}
-          onClick={this.addNode.bind(null, "sink")}
-        >
-          Add Node Type 5
-      </Button>
-        <Button
-          // className={`${ButtonStyles} ${nodeType1Styles}`}
-          onClick={this.addNode.bind(null, "end")}
-        >
-          Add End Type
-      </Button> */}
         <Button
           // className={`${ButtonStyles}`}
           onClick={this.setZoom.bind(this, true)}
@@ -234,10 +198,13 @@ export default class App extends React.Component {
         >
           Zoom out
       </Button>
+        <Button onClick={this._handleDeleteNode}>
+          删除结点
+      </Button>
         <Button
           // className={`${ButtonStyles}`}
           type="primary"
-        // onClick={this.setZoom.bind(this, false)}
+          onClick={this._generateProcess}
         >
           执行
       </Button>
@@ -271,14 +238,52 @@ export default class App extends React.Component {
               return <Component cKey={i} key={i} id={node.id} click={this.showPropPane} />;
             })}
           </ReactDAG>
-          <div className="proppane" >
-              <PropPane {...curBlock}></PropPane>
-          </div>
+          {curBlock ? <div className="proppane" >
+            <PropPane {...curBlock} onSave={this.saveProps}></PropPane>
+          </div> : null}
+
         </div>
 
       </div>,
 
     ];
+  }
+  _generateProcess = () => {
+    const { nodes, connections } = this.state
+    let nodeObj = nodes.reduce((before, current) => { before[current.id] = current; return before; }, {})
+    let connectionObj = connections.reduce((before, current) => { before[current.sourceId] = current; return before; }, {})
+    // console.log(nodeObj, connectionObj)
+    let ret = []
+    let currentConnection = connectionObj[connectionObj['start'].sourceId]
+    ret.push(nodeObj[currentConnection.sourceId].config)
+    for (; ;) {
+      let currentNode = nodeObj[currentConnection.targetId]
+      //待优化 here
+      ret.push(currentNode.config)
+      if (currentConnection.targetId === "end") {
+        break
+      }
+      currentConnection = connectionObj[currentConnection.targetId]
+    }
+    console.log(JSON.stringify(ret))
+  }
+  saveProps = (id, data) => {
+    let { curIndex, nodes } = this.state
+    nodes[curIndex].config.data = Object.assign({}, nodes[curIndex].config.data, data)
+    this.setState({
+      nodes: nodes
+    })
+
+  }
+  _handleDeleteNode = () => {
+    const { curBlock, curIndex, nodes } = this.state
+    let preNodes = nodes
+    preNodes.splice(curIndex, 1)
+    console.log(preNodes)
+    this.setState({
+      nodes: preNodes
+    })
+
   }
 
   showPropPane = (id, key) => {
@@ -286,7 +291,8 @@ export default class App extends React.Component {
     console.log(id, key)
     console.log(nodes[key])
     this.setState({
-      curBlock : nodes[key]
+      curBlock: nodes[key],
+      curIndex: key
     })
   }
 }
