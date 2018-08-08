@@ -9,6 +9,9 @@ import { theme } from "../../styles";
 
 const modNodeStyle = css({
   border: `2px solid ${theme.main.colors.teal}`,
+  borderRadius: `10px`,
+  width:'100px',
+  height:'50px',
 });
 
 const modEndpointStyles = css({

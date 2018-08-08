@@ -21,6 +21,7 @@ import NodeType2 from "./components/NodeType2";
 import NodeType3 from "./components/NodeType3";
 import ErrorType from "./components/ErrorType/wrapper";
 import EndType from "./components/EndType";
+import StartType from "./components/StartType";
 import { css, before } from "glamor";
 import dagre from "dagre";
 import { data } from "./data";
@@ -110,7 +111,8 @@ const typeToComponentMap = {
   source: DefaultNode,
   transform: NodeType1,
   end: EndType,
-  error: ErrorType
+  error: ErrorType,
+  start: StartType,
 };
 
 const getComponent = (type) =>
@@ -211,23 +213,10 @@ export default class App extends React.Component {
           type="primary"
           onClick={this._generateProcess}
           disabled = {isRunning?true: false}
+          loading ={isRunning?true: false}
         >
           {isRunning?'正在执行':'执行'}
       </Button>
-        {/* <Button
-          // className={`${ButtonStyles}`}
-          type="primary"
-          onClick={this._getResponse}
-        >
-          查看数据
-      </Button>
-        <Button
-          // className={`${ButtonStyles}`}
-          type="warn"
-          onClick={this._ChangeType}
-        >
-          test
-      </Button> */}
       </div>,
       <div className="content">
         <Sider onClick={this.addNode}></Sider>
@@ -273,11 +262,6 @@ export default class App extends React.Component {
 
     ];
   }
-  _ChangeType = () => {
-    let { nodes, connections } = this.state
-    let element = document.getElementById(nodes[1].id)
-    element.style.border = "2px solid red"
-  }
   _getResponse = async () => {
     let id = this.currentId
     let returnData = await fetch('/getData', {
@@ -298,11 +282,17 @@ export default class App extends React.Component {
         })
         if (returnData.data[feId] !== 'error') {
           console.log(feId)
-          document.getElementById(feId).style.border = "2px solid green"
+          // document.getElementById(feId).style.border = "2px solid green"
+          // document.getElementById(feId).style.background = "repeating-linear-gradient(45deg,#fb3,#fb3 15px,#58a 0,#58a 30px);"
+          document.getElementById(feId).style.background = "#58c374"
+          document.getElementById(feId).style.backgroundImage = "repeating-linear-gradient(45deg,hsla(0,0%,100%,.1),hsla(0,0%,100%,.1) 15px,transparent 0,transparent 30px),repeating-linear-gradient(-45deg,hsla(0,0%,100%,.1),hsla(0,0%,100%,.1) 15px,transparent 0,transparent 30px)"
         }
         if (feId === 'end' && returnData.data[feId] === 'success') {
           // console.log('clear', this.intervalId)
           clearInterval(this.intervalId)
+          this.setState({
+            isRunning: false
+          })
           notification.success({
             message: '爬虫结束',
           });
@@ -313,6 +303,11 @@ export default class App extends React.Component {
 
   _generateProcess = async () => {
     const { nodes, connections } = this.state
+    nodes.forEach((item)=>{
+      document.getElementById(item.id).style.border=""
+      document.getElementById(item.id).style.background=""
+    })
+
     let nodeObj = nodes.reduce((before, current) => { before[current.id] = current; return before; }, {})
     let connectionObj = connections.reduce((before, current) => { before[current.sourceId] = current; return before; }, {})
     // console.log(nodeObj, connectionObj)

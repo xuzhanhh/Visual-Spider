@@ -32,7 +32,7 @@ export const data = {
       config: {
         actualType: 'start',
         label: "Start Here",
-        type: "source",
+        type: "start",
       },
       id: "start",
     },

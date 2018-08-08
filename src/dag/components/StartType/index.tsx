@@ -7,7 +7,8 @@ import { theme } from "../../styles";
 
 export const endPointStyles = css({
   "&.right": {
-    left: "190px",
+    left: "90px",
+    top:'0px'
   },
   borderRadius: "100%",
   height: "25px",
@@ -27,14 +28,13 @@ export const nodeWrapperStyles = css({
 });
 export const nodeStyles = css({
   background: "white",
-  border: `2px solid ${theme.main.colors.blueGreen}`,
-  borderRadius: '10px',
+  border: `2px solid ${theme.main.colors.salmonPink}`,
   cursor: "pointer",
   display: "inline-block",
-  height: "100px",
-
+  height: "50px",
   position: "absolute",
-  width: "200px",
+  borderRadius: '10px',
+  width: "100px",
   zIndex: 20000,
 });
 
@@ -50,7 +50,7 @@ export default class NodeType1 extends DefaultNode{
           params: {
             ...transformSource,
             isSource: true,
-            uuid: `${this.props.id}-start`,
+            uuid: `${this.props.id}-transform`,
           },
           referenceParams: {},
         },
@@ -59,7 +59,7 @@ export default class NodeType1 extends DefaultNode{
         allowLoopback: false,
         anchor: "ContinuousLeft",
         dropOptions: { hoverClass: "drag-hover" },
-        isTarget: false,
+        isTarget: true,
       },
       nodeId: this.props.id,
     };
@@ -84,7 +84,7 @@ export default class NodeType1 extends DefaultNode{
         <div className={`${nodeWrapperStyles}`}>
           {config && config.label ? config.label : this.props.id}
           <div
-            id={`${this.props.id}-right`}
+            id={`${this.props.id}`}
             ref={ref => (this.rightEndpointRef = ref)}
             className={`${endPointStyles} right`}
           />
