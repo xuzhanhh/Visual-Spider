@@ -19,14 +19,16 @@ import ReactDAG, { DefaultNode } from "react-dag";
 import NodeType1 from "./components/NodeType1/wrapper";
 import NodeType2 from "./components/NodeType2";
 import NodeType3 from "./components/NodeType3";
+import ErrorType from "./components/ErrorType/wrapper";
 import EndType from "./components/EndType";
 import { css, before } from "glamor";
 import dagre from "dagre";
 import { data } from "./data";
 import { cloneDeep } from 'lodash'
-import { Button } from 'antd';
+import { Button, notification } from 'antd';
 import Sider from './menu'
 import PropPane from './proppane/index'
+// import { setInterval } from "timers";
 /* tslint:disable */
 const uuidv4 = require("uuid/v4");
 /* tslint:enable */
@@ -108,6 +110,7 @@ const typeToComponentMap = {
   source: DefaultNode,
   transform: NodeType1,
   end: EndType,
+  error: ErrorType
 };
 
 const getComponent = (type) =>
@@ -157,6 +160,8 @@ export default class App extends React.Component {
     connections: data.connections,
     nodes: data.nodes,
     zoom: 1,
+    isRunning : false,
+    result : {},
   };
   addNode = (RectType, ActualType) => {
     const generateNodeConfig = (RectType, ActualType) => ({
@@ -165,7 +170,7 @@ export default class App extends React.Component {
         type: RectType,
         actualType: ActualType
       },
-      id: uuidv4(),
+      id: uuidv4().replace(/-/g,'0'),
     });
     this.setState({
       nodes: [...this.state.nodes, generateNodeConfig(RectType, ActualType)],
@@ -179,7 +184,7 @@ export default class App extends React.Component {
     }
   };
   render() {
-    const { curBlock, curIndex } = this.state
+    const { curBlock, curIndex,isRunning,result } = this.state
     console.log(this.state.nodes, this.state.connections)
     return [
       <h1 className={`${headerStyles}`} key="title">
@@ -205,9 +210,24 @@ export default class App extends React.Component {
           // className={`${ButtonStyles}`}
           type="primary"
           onClick={this._generateProcess}
+          disabled = {isRunning?true: false}
         >
-          执行
+          {isRunning?'正在执行':'执行'}
       </Button>
+        {/* <Button
+          // className={`${ButtonStyles}`}
+          type="primary"
+          onClick={this._getResponse}
+        >
+          查看数据
+      </Button>
+        <Button
+          // className={`${ButtonStyles}`}
+          type="warn"
+          onClick={this._ChangeType}
+        >
+          test
+      </Button> */}
       </div>,
       <div className="content">
         <Sider onClick={this.addNode}></Sider>
@@ -238,37 +258,88 @@ export default class App extends React.Component {
               return <Component cKey={i} key={i} id={node.id} click={this.showPropPane} />;
             })}
           </ReactDAG>
-          {curBlock ? <div className="proppane" >
+          {curBlock&&!isRunning ? <div className="proppane" >
             <PropPane {...curBlock} onSave={this.saveProps}></PropPane>
           </div> : null}
-
+          {
+            isRunning?
+            <div className="proppane" >
+              {JSON.stringify(result, null, '\t')}
+            </div>:null
+          }
         </div>
 
       </div>,
 
     ];
   }
+  _ChangeType = () => {
+    let { nodes, connections } = this.state
+    let element = document.getElementById(nodes[1].id)
+    element.style.border = "2px solid red"
+  }
+  _getResponse = async () => {
+    let id = this.currentId
+    let returnData = await fetch('/getData', {
+      body: JSON.stringify({ id }),
+      headers: {
+        'content-type': 'application/json'
+      },
+      method: 'POST',
+    }).then(response => response.json())
+    // console.log(JSON.stringify(ret))
+    if (returnData.data) {
+      // for( let i)
+      Object.keys(returnData.data).forEach((feId) => {
+        let result = this.state.result
+        result[feId] =returnData.data[feId]
+        this.setState({
+          result
+        })
+        if (returnData.data[feId] !== 'error') {
+          console.log(feId)
+          document.getElementById(feId).style.border = "2px solid green"
+        }
+        if (feId === 'end' && returnData.data[feId] === 'success') {
+          // console.log('clear', this.intervalId)
+          clearInterval(this.intervalId)
+          notification.success({
+            message: '爬虫结束',
+          });
+        }
+      })
+    }
+  }
+
   _generateProcess = async () => {
     const { nodes, connections } = this.state
     let nodeObj = nodes.reduce((before, current) => { before[current.id] = current; return before; }, {})
     let connectionObj = connections.reduce((before, current) => { before[current.sourceId] = current; return before; }, {})
     // console.log(nodeObj, connectionObj)
+    const id = uuidv4()
+    this.currentId = id
     let configData = []
     let currentConnection = connectionObj[connectionObj['start'].sourceId]
+    // delete nodeObj[currentConnection.sourceId].config.style
+    nodeObj[currentConnection.sourceId].config.feId = nodeObj[currentConnection.sourceId].id
+    nodeObj[currentConnection.sourceId].config.id = id
     configData.push(nodeObj[currentConnection.sourceId].config)
     for (; ;) {
       let currentNode = nodeObj[currentConnection.targetId]
       //待优化 here
+      currentNode.config.id = id
+      currentNode.config.feId = currentNode.id
+      // delete currentNode.config.style
       configData.push(currentNode.config)
       if (currentConnection.targetId === "end") {
         break
       }
       currentConnection = connectionObj[currentConnection.targetId]
     }
-    console.log(JSON.stringify({configData}))
+    console.log(JSON.stringify({ configData }))
 
-    let returnData = await fetch('/test', {
-      body: JSON.stringify({configData}),
+    let returnData = await fetch('/setKey', {
+      body: JSON.stringify({ configData }),
       headers: {
         'content-type': 'application/json'
       },
@@ -276,6 +347,14 @@ export default class App extends React.Component {
     }).then(response => response.json())
     // console.log(JSON.stringify(ret))
     console.log(returnData)
+
+    // this.getData = 
+    this.setState({
+      isRunning: true
+    })
+    this.intervalId = setInterval(this._getResponse, 500)
+
+    console.log(nodes)
   }
   saveProps = (id, data) => {
     let { curIndex, nodes } = this.state
@@ -302,7 +381,8 @@ export default class App extends React.Component {
     console.log(nodes[key])
     this.setState({
       curBlock: nodes[key],
-      curIndex: key
+      curIndex: key,
+      isRunning: false,
     })
   }
 }

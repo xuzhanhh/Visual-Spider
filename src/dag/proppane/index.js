@@ -20,11 +20,12 @@ export default class PropPane extends React.Component {
         }
     }
     renderForm = () => {
-        const { id } = this.props
+        const { id, config } = this.props
         // tslint:disable-next-line:no-console
-        const actualType = this.props.config.actualType
+        const actualType = config.actualType
         const proppaneProp = {
-            onSave:this.handleSave
+            onSave:this.handleSave,
+            originProps: config.data? config.data: {}
         }
         switch (actualType) {
             case 'openPage':

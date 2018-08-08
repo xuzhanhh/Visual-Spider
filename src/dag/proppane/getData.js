@@ -1,9 +1,18 @@
 import React from 'react'
 import { Input, Button } from 'antd'
 export default class GetDataProp extends React.Component {
-    state={
-        varible:'',
-        xpath: '',
+    // state={
+    //     varible:'',
+    //     xpath: '',
+    // }
+    constructor(props){
+        super(props)
+        // tslint:disable-next-line:no-console
+        console.log(props)
+        this.state = {
+            varible: props.originProps.varible?props.originProps.varible: '',
+            xpath:props.originProps.xpath?props.originProps.xpath: ''
+        }
     }
     render() {
         const { varible, xpath } = this.state

@@ -1,8 +1,13 @@
 import React from 'react'
 import { Input, Button } from 'antd'
 export default class OpenPageProp extends React.Component {
-    state={
-        url:''
+    constructor(props){
+        super(props)
+        // tslint:disable-next-line:no-console
+        console.log(props)
+        this.state = {
+            url: props.originProps.url?props.originProps.url: ''
+        }
     }
     render() {
         const { url } = this.state

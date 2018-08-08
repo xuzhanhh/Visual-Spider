@@ -39,6 +39,9 @@ export const data = {
     {
       config: {
         actualType: 'openPage',
+        data: {
+          "url":"http://www.jd.com"
+        },
         label: "Open Page",
         type: "transform",
       },
