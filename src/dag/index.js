@@ -284,6 +284,7 @@ export default class App extends React.Component {
           console.log(feId)
           // document.getElementById(feId).style.border = "2px solid green"
           // document.getElementById(feId).style.background = "repeating-linear-gradient(45deg,#fb3,#fb3 15px,#58a 0,#58a 30px);"
+          document.getElementById(feId).style.border = "2px solid #58c374"
           document.getElementById(feId).style.background = "#58c374"
           document.getElementById(feId).style.backgroundImage = "repeating-linear-gradient(45deg,hsla(0,0%,100%,.1),hsla(0,0%,100%,.1) 15px,transparent 0,transparent 30px),repeating-linear-gradient(-45deg,hsla(0,0%,100%,.1),hsla(0,0%,100%,.1) 15px,transparent 0,transparent 30px)"
         }
