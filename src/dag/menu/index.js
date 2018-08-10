@@ -10,18 +10,21 @@ export default class Sider extends React.Component {
     const { onClick } = this.props
     switch(e.key){
         case 'openPage':
-            // onClick.bind(null,'transform')
-            // console.log('openPage')
-            alert('openPage')
-            onClick('transform', 'openPage')
+            // alert('openPage')
+            onClick('transform',e.key)
             break
         case 'evaluate':
-            // onClick.bind(null,'transform')
-            onClick('transform', 'evaluate')
+            onClick('transform', e.key)
             break
         case 'getData':
-            // onClick.bind(null,'transform')
-            onClick('transform', 'getData')
+            onClick('transform', e.key)
+        case 'input':
+            onClick('transform',e.key)
+            break
+        case 'click':
+            onClick('transform',e.key)
+        case 'sleep':
+            onClick('transform',e.key)
             break
     }
 
@@ -44,6 +47,8 @@ export default class Sider extends React.Component {
             <Menu.Item key="openPage">打开页面</Menu.Item>
             <Menu.Item key="click">点击</Menu.Item>
             <Menu.Item key="getData">获取数据</Menu.Item>
+            <Menu.Item key="input">输入</Menu.Item>
+            <Menu.Item key="sleep">延时</Menu.Item>
             <Menu.Item key="2">滚动事件</Menu.Item>
             <Menu.Item key="evaluate">执行代码</Menu.Item>
           {/* </MenuItemGroup> */}

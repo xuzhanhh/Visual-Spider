@@ -7,7 +7,8 @@ import { theme } from "../../styles";
 
 export const endPointStyles = css({
   "&.right": {
-    left: "190px",
+    left: "90px",
+    top:'0px'
   },
   borderRadius: "100%",
   height: "25px",
@@ -31,10 +32,10 @@ export const nodeStyles = css({
   borderRadius: '10px',
   cursor: "pointer",
   display: "inline-block",
-  height: "100px",
+  height: "50px",
 
   position: "absolute",
-  width: "200px",
+  width: "100px",
   zIndex: 20000,
 });
 

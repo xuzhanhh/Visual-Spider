@@ -1,8 +1,11 @@
 import React from 'react'
 import OpenPageProp from './openPage'
 import GetDataProp from './getData'
+import InputProp from './input'
+import ClickProp from './click'
+import SleepProp from './sleep'
 import * as PropTypes from 'prop-types'
-import { Button } from 'antd'
+import { Button, message } from 'antd'
 export default class PropPane extends React.Component {
     render() {
         // tslint:disable-next-line:no-console
@@ -22,16 +25,25 @@ export default class PropPane extends React.Component {
     renderForm = () => {
         const { id, config } = this.props
         // tslint:disable-next-line:no-console
+        // console.log('config', config)
         const actualType = config.actualType
         const proppaneProp = {
+            id: id,
             onSave:this.handleSave,
-            originProps: config.data? config.data: {}
+            originProps: config.data? config.data: {},
+            // config: config
         }
         switch (actualType) {
             case 'openPage':
                 return <OpenPageProp {...proppaneProp}/>
             case 'getData':
                 return <GetDataProp {...proppaneProp}/>
+            case 'input':
+                return <InputProp {...proppaneProp}/>
+           case 'click':
+                return <ClickProp {...proppaneProp}/> 
+           case 'sleep':
+                return <SleepProp {...proppaneProp}/> 
             default:
                 return null
         }

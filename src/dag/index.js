@@ -26,12 +26,27 @@ import { css, before } from "glamor";
 import dagre from "dagre";
 import { data } from "./data";
 import { cloneDeep } from 'lodash'
-import { Button, notification } from 'antd';
+import { Button, notification, message,Table } from 'antd';
 import Sider from './menu'
 import PropPane from './proppane/index'
 // import { setInterval } from "timers";
 /* tslint:disable */
 const uuidv4 = require("uuid/v4");
+
+const columns = [{
+  title: '时间',
+  dataIndex: 'time',
+  key: 'time',
+}, {
+  title: '方法',
+  dataIndex: 'method',
+  key: 'method',
+}, {
+  title: '返回值',
+  dataIndex: 'data',
+  key: 'data',
+}];
+
 /* tslint:enable */
 
 /* tslint:disable */
@@ -119,7 +134,6 @@ const getComponent = (type) =>
   typeToComponentMap[type] ? typeToComponentMap[type] : DefaultNode;
 
 const getLayout = (nodes, connections, separation = 200) => {
-  console.log('getLayout', nodes, connections)
   const graph = new dagre.graphlib.Graph();
   graph.setGraph({
     marginx: 0,
@@ -139,7 +153,6 @@ const getLayout = (nodes, connections, separation = 200) => {
   connections.forEach(connection => {
     graph.setEdge(connection.sourceId, connection.targetId);
   });
-  console.log(graph)
   dagre.layout(graph);
   return graph;
 };
@@ -163,7 +176,7 @@ export default class App extends React.Component {
     nodes: data.nodes,
     zoom: 1,
     isRunning : false,
-    result : {},
+    result : [],
   };
   addNode = (RectType, ActualType) => {
     const generateNodeConfig = (RectType, ActualType) => ({
@@ -187,7 +200,6 @@ export default class App extends React.Component {
   };
   render() {
     const { curBlock, curIndex,isRunning,result } = this.state
-    console.log(this.state.nodes, this.state.connections)
     return [
       <h1 className={`${headerStyles}`} key="title">
         Visible spider with React DAG
@@ -253,7 +265,8 @@ export default class App extends React.Component {
           {
             isRunning?
             <div className="proppane" >
-              {JSON.stringify(result, null, '\t')}
+              {/* {JSON.stringify(result, null, '\t')} */}
+              <Table dataSource={result} columns={columns}/>
             </div>:null
           }
         </div>
@@ -271,17 +284,17 @@ export default class App extends React.Component {
       },
       method: 'POST',
     }).then(response => response.json())
-    // console.log(JSON.stringify(ret))
     if (returnData.data) {
-      // for( let i)
       Object.keys(returnData.data).forEach((feId) => {
         let result = this.state.result
-        result[feId] =returnData.data[feId]
+        result.push( JSON.parse(returnData.data[feId]))
+        result.sort((a , b)=>{
+          return a.time > b.time? 1: -1
+        })
         this.setState({
           result
         })
         if (returnData.data[feId] !== 'error') {
-          console.log(feId)
           // document.getElementById(feId).style.border = "2px solid green"
           // document.getElementById(feId).style.background = "repeating-linear-gradient(45deg,#fb3,#fb3 15px,#58a 0,#58a 30px);"
           document.getElementById(feId).style.border = "2px solid #58c374"
@@ -289,11 +302,10 @@ export default class App extends React.Component {
           document.getElementById(feId).style.backgroundImage = "repeating-linear-gradient(45deg,hsla(0,0%,100%,.1),hsla(0,0%,100%,.1) 15px,transparent 0,transparent 30px),repeating-linear-gradient(-45deg,hsla(0,0%,100%,.1),hsla(0,0%,100%,.1) 15px,transparent 0,transparent 30px)"
         }
         if (feId === 'end' && returnData.data[feId] === 'success') {
-          // console.log('clear', this.intervalId)
           clearInterval(this.intervalId)
-          this.setState({
-            isRunning: false
-          })
+          // this.setState({
+          //   isRunning: false
+          // })
           notification.success({
             message: '爬虫结束',
           });
@@ -304,6 +316,8 @@ export default class App extends React.Component {
 
   _generateProcess = async () => {
     const { nodes, connections } = this.state
+    console.log(JSON.stringify(nodes) )
+    console.log(JSON.stringify(connections))
     nodes.forEach((item)=>{
       document.getElementById(item.id).style.border=""
       document.getElementById(item.id).style.background=""
@@ -311,7 +325,6 @@ export default class App extends React.Component {
 
     let nodeObj = nodes.reduce((before, current) => { before[current.id] = current; return before; }, {})
     let connectionObj = connections.reduce((before, current) => { before[current.sourceId] = current; return before; }, {})
-    // console.log(nodeObj, connectionObj)
     const id = uuidv4()
     this.currentId = id
     let configData = []
@@ -331,8 +344,10 @@ export default class App extends React.Component {
         break
       }
       currentConnection = connectionObj[currentConnection.targetId]
+      if(!currentConnection){
+        break
+      }
     }
-    console.log(JSON.stringify({ configData }))
 
     let returnData = await fetch('/setKey', {
       body: JSON.stringify({ configData }),
@@ -341,30 +356,27 @@ export default class App extends React.Component {
       },
       method: 'POST',
     }).then(response => response.json())
-    // console.log(JSON.stringify(ret))
-    console.log(returnData)
 
     // this.getData = 
     this.setState({
-      isRunning: true
+      isRunning: true,
+      result: []
     })
     this.intervalId = setInterval(this._getResponse, 500)
 
-    console.log(nodes)
   }
   saveProps = (id, data) => {
     let { curIndex, nodes } = this.state
     nodes[curIndex].config.data = Object.assign({}, nodes[curIndex].config.data, data)
     this.setState({
       nodes: nodes
-    })
-
+    },()=>{message.success('保存成功')})
+  
   }
   _handleDeleteNode = () => {
     const { curBlock, curIndex, nodes } = this.state
     let preNodes = nodes
     preNodes.splice(curIndex, 1)
-    console.log(preNodes)
     this.setState({
       nodes: preNodes
     })
@@ -373,8 +385,6 @@ export default class App extends React.Component {
 
   showPropPane = (id, key) => {
     const { nodes } = this.state
-    console.log(id, key)
-    console.log(nodes[key])
     this.setState({
       curBlock: nodes[key],
       curIndex: key,
