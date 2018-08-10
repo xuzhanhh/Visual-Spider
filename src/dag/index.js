@@ -133,12 +133,12 @@ const typeToComponentMap = {
 const getComponent = (type) =>
   typeToComponentMap[type] ? typeToComponentMap[type] : DefaultNode;
 
-const getLayout = (nodes, connections, separation = 200) => {
+const getLayout = (nodes, connections, separation = 50) => {
   const graph = new dagre.graphlib.Graph();
   graph.setGraph({
     marginx: 0,
     marginy: 0,
-    nodesep: 90,
+    nodesep: 20,
     rankdir: "LR",
     ranker: "longest-path",
     ranksep: separation,
@@ -181,7 +181,7 @@ export default class App extends React.Component {
   addNode = (RectType, ActualType) => {
     const generateNodeConfig = (RectType, ActualType) => ({
       config: {
-        label: `Node Type: ${ActualType}`,
+        label: `${ActualType}`,
         type: RectType,
         actualType: ActualType
       },

@@ -15,8 +15,9 @@ export function onConnectionEventHandler(connObj) {
 function highlightConnection(connection) {
   connection.toggleType("selected");
 }
-
+/* tslint:disable */
 export function onEndPointClick(jsPlumbObject) {
+  console.log('jsPlumbObject', jsPlumbObject)
   if (jsPlumbObject.endpoints) {
     highlightConnection(jsPlumbObject);
   }
