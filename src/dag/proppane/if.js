@@ -1,34 +1,37 @@
 import React from 'react'
 import { Input, Button } from 'antd'
-export default class SleepProp extends React.Component {
+const { TextArea } = Input;
+export default class IfProp extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            time: props.originProps.time ? props.originProps.time : ''
+            value: props.originProps.value ? props.originProps.value : ''
         }
     }
     componentWillReceiveProps(nextProps) {
         if (nextProps.id !== this.props.id) {
             this.setState({
-                time: nextProps.originProps.time ? nextProps.originProps.time : ''
+                value: nextProps.originProps.value ? nextProps.originProps.value : ''
             })
         }
     }
     render() {
-        const {  time } = this.state
+        const { value, xpath } = this.state
         return (
             <div>
                 <div><Button type="primary" onClick={this.handleSave}>保存</Button></div>
-                请输入延时(ms):    <Input onChange={this.changeXpath} value={time} placeholder="Basic usage" />
+                请输入条件(JS语句):    <TextArea rows={6} onChange={this.changeValue} value={value} placeholder="Basic usage" />
             </div>
         )
     }
-    changeXpath = (e) => {
+    changeValue = (e) => {
         this.setState({
-            time: e.target.value
+            value: e.target.value
         })
     }
     handleSave = () => {
+        // tslint:disable-next-line:no-console
+        console.log('handleSave')
         this.props.onSave({ ...this.state })
     }
 }

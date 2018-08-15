@@ -4,6 +4,7 @@ import GetDataProp from './getData'
 import InputProp from './input'
 import ClickProp from './click'
 import SleepProp from './sleep'
+import IfProp from './if'
 import * as PropTypes from 'prop-types'
 import { Button, message } from 'antd'
 export default class PropPane extends React.Component {
@@ -44,6 +45,8 @@ export default class PropPane extends React.Component {
                 return <ClickProp {...proppaneProp}/> 
            case 'sleep':
                 return <SleepProp {...proppaneProp}/> 
+           case 'if':
+                return <IfProp {...proppaneProp}/> 
             default:
                 return null
         }

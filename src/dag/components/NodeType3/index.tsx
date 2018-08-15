@@ -11,23 +11,24 @@ const nodeStyles = css({
   background: "white",
   border: `2px solid ${theme.main.colors.yellow}`,
   cursor: "pointer",
-  height: "105px",
+  height: "55px",
   left: "200px",
   position: "absolute",
   top: "200px",
-  width: "105px",
+  width: "55px",
+  borderRadius: "5px"
 });
 
 const modEndPointStyles = css({
   "&.bottom": {
     height: "15px",
-    left: "45px",
-    top: "100px",
+    left: "15px",
+    top: "42px",
   },
   "&.right": {
-    height: "15px",
-    left: "95px",
-    top: "35px",
+    height: "5px",
+    left: "47px",
+    top: "30px",
   },
 });
 

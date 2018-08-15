@@ -1,11 +1,13 @@
 import React from 'react'
-import { Input, Button } from 'antd'
+import { Input, Button, Select } from 'antd'
+const Option = Select.Option;
 export default class GetDataProp extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
+            key:props.originProps.key ? props.originProps.key : 'innerHTML',
             varible: props.originProps.varible ? props.originProps.varible : '',
-            xpath: props.originProps.xpath ? props.originProps.xpath : ''
+            xpath: props.originProps.xpath ? props.originProps.xpath : '',
         }
     }
     componentWillReceiveProps(nextProps) {
@@ -17,14 +19,27 @@ export default class GetDataProp extends React.Component {
         }
     }
     render() {
-        const { varible, xpath } = this.state
+        const { varible, xpath,key } = this.state
         return (
             <div>
                 <div><Button type="primary" onClick={this.handleSave}>保存</Button></div>
-                请输入变量名:    <Input onChange={this.changeVal} value={varible} placeholder="Basic usage" />
-                请输入xPath:    <Input onChange={this.changeXpath} value={xpath} placeholder="Basic usage" />
+                变量名:    <Input onChange={this.changeVal} value={varible} placeholder="Basic usage" />
+                XPath:    <Input onChange={this.changeXpath} value={xpath} placeholder="Basic usage" />
+                domKey:       <Select defaultValue="innerHTML" value={key} style={{ width: 120 }} onChange={this.changeKey}>
+                    <Option value="innerHTML">innerHTML</Option>
+                    <Option value="innerText">innerText</Option>
+                    <Option value="href" >href</Option>
+                    {/* <Option value="Yiminghe">yiminghe</Option> */}
+                </Select>
             </div>
         )
+    }
+    changeKey = (e)=>{
+        // tslint:disable-next-line:no-console
+        // console.log(e)
+        this.setState({
+            key: e
+        })
     }
     changeVal = (e) => {
         this.setState({

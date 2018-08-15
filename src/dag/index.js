@@ -18,7 +18,7 @@ import { setGlobal, theme } from "./styles";
 import ReactDAG, { DefaultNode } from "react-dag";
 import NodeType1 from "./components/NodeType1/wrapper";
 import NodeType2 from "./components/NodeType2";
-import NodeType3 from "./components/NodeType3";
+import NodeType3 from "./components/NodeType3/wrapper";
 import ErrorType from "./components/ErrorType/wrapper";
 import EndType from "./components/EndType";
 import StartType from "./components/StartType";
@@ -26,7 +26,7 @@ import { css, before } from "glamor";
 import dagre from "dagre";
 import { data } from "./data";
 import { cloneDeep } from 'lodash'
-import { Button, notification, message,Table } from 'antd';
+import { Button, notification, message, Table } from 'antd';
 import Sider from './menu'
 import PropPane from './proppane/index'
 // import { setInterval } from "timers";
@@ -175,8 +175,8 @@ export default class App extends React.Component {
     connections: data.connections,
     nodes: data.nodes,
     zoom: 1,
-    isRunning : false,
-    result : [],
+    isRunning: false,
+    result: [],
   };
   addNode = (RectType, ActualType) => {
     const generateNodeConfig = (RectType, ActualType) => ({
@@ -185,7 +185,7 @@ export default class App extends React.Component {
         type: RectType,
         actualType: ActualType
       },
-      id: uuidv4().replace(/-/g,'0'),
+      id: uuidv4().replace(/-/g, '0'),
     });
     this.setState({
       nodes: [...this.state.nodes, generateNodeConfig(RectType, ActualType)],
@@ -199,7 +199,7 @@ export default class App extends React.Component {
     }
   };
   render() {
-    const { curBlock, curIndex,isRunning,result } = this.state
+    const { curBlock, curIndex, isRunning, result } = this.state
     return [
       <h1 className={`${headerStyles}`} key="title">
         Visible spider with React DAG
@@ -224,10 +224,13 @@ export default class App extends React.Component {
           // className={`${ButtonStyles}`}
           type="primary"
           onClick={this._generateProcess}
-          disabled = {isRunning?true: false}
-          loading ={isRunning?true: false}
+          disabled={isRunning ? true : false}
+          loading={isRunning ? true : false}
         >
-          {isRunning?'正在执行':'执行'}
+          {isRunning ? '正在执行' : '执行'}
+        </Button>
+        <Button onClick={() => { console.log(this.state.nodes, JSON.stringify(this.state.nodes)); console.log(this.state.connections, JSON.stringify(this.state.connections)) }}>
+          log
       </Button>
       </div>,
       <div className="content">
@@ -259,15 +262,15 @@ export default class App extends React.Component {
               return <Component cKey={i} key={i} id={node.id} click={this.showPropPane} />;
             })}
           </ReactDAG>
-          {curBlock&&!isRunning ? <div className="proppane" >
+          {curBlock && !isRunning ? <div className="proppane" >
             <PropPane {...curBlock} onSave={this.saveProps}></PropPane>
           </div> : null}
           {
-            isRunning?
-            <div className="proppane" >
-              {/* {JSON.stringify(result, null, '\t')} */}
-              <Table dataSource={result} columns={columns}/>
-            </div>:null
+            isRunning ?
+              <div className="proppane" >
+                {/* {JSON.stringify(result, null, '\t')} */}
+                <Table dataSource={result} columns={columns} />
+              </div> : null
           }
         </div>
 
@@ -284,24 +287,26 @@ export default class App extends React.Component {
       },
       method: 'POST',
     }).then(response => response.json())
-    if (returnData.data) {
+    // console.log(returnData)
+    if (returnData && returnData.data) {
       Object.keys(returnData.data).forEach((feId) => {
         let result = this.state.result
-        result.push( JSON.parse(returnData.data[feId]))
-        result.sort((a , b)=>{
-          return a.time > b.time? 1: -1
+        let retData = JSON.parse(returnData.data[feId])
+        result.push(retData)
+        result.sort((a, b) => {
+          return a.time > b.time ? 1 : -1
         })
         this.setState({
           result
         })
-        if (returnData.data[feId] !== 'error') {
+        if (retData !== 'error') {
           // document.getElementById(feId).style.border = "2px solid green"
           // document.getElementById(feId).style.background = "repeating-linear-gradient(45deg,#fb3,#fb3 15px,#58a 0,#58a 30px);"
           document.getElementById(feId).style.border = "2px solid #58c374"
           document.getElementById(feId).style.background = "#58c374"
           document.getElementById(feId).style.backgroundImage = "repeating-linear-gradient(45deg,hsla(0,0%,100%,.1),hsla(0,0%,100%,.1) 15px,transparent 0,transparent 30px),repeating-linear-gradient(-45deg,hsla(0,0%,100%,.1),hsla(0,0%,100%,.1) 15px,transparent 0,transparent 30px)"
         }
-        if (feId === 'end' && returnData.data[feId] === 'success') {
+        if (feId === 'end' && retData ['data'] === 'success') {
           clearInterval(this.intervalId)
           // this.setState({
           //   isRunning: false
@@ -316,48 +321,69 @@ export default class App extends React.Component {
 
   _generateProcess = async () => {
     const { nodes, connections } = this.state
-    console.log(JSON.stringify(nodes) )
+    console.log(JSON.stringify(nodes))
     console.log(JSON.stringify(connections))
-    nodes.forEach((item)=>{
-      document.getElementById(item.id).style.border=""
-      document.getElementById(item.id).style.background=""
+    nodes.forEach((item) => {
+      document.getElementById(item.id).style.border = ""
+      document.getElementById(item.id).style.background = ""
     })
 
-    let nodeObj = nodes.reduce((before, current) => { before[current.id] = current; return before; }, {})
-    let connectionObj = connections.reduce((before, current) => { before[current.sourceId] = current; return before; }, {})
-    const id = uuidv4()
-    this.currentId = id
-    let configData = []
-    let currentConnection = connectionObj[connectionObj['start'].sourceId]
-    // delete nodeObj[currentConnection.sourceId].config.style
-    nodeObj[currentConnection.sourceId].config.feId = nodeObj[currentConnection.sourceId].id
-    nodeObj[currentConnection.sourceId].config.id = id
-    configData.push(nodeObj[currentConnection.sourceId].config)
-    for (; ;) {
-      let currentNode = nodeObj[currentConnection.targetId]
-      //待优化 here
-      currentNode.config.id = id
-      currentNode.config.feId = currentNode.id
-      // delete currentNode.config.style
-      configData.push(currentNode.config)
-      if (currentConnection.targetId === "end") {
-        break
-      }
-      currentConnection = connectionObj[currentConnection.targetId]
-      if(!currentConnection){
-        break
-      }
-    }
+    // let nodeObj = nodes.reduce((before, current) => { before[current.id] = current; return before; }, {})
+    // let connectionObj = connections.reduce((before, current) => { before[current.sourceId] = current; return before; }, {})
+    // const id = uuidv4()
+    // this.currentId = id
+    // let configData = []
+    // let nextStartId = null
+    // let currentConnection = connectionObj[connectionObj['start'].sourceId]
+    // // delete nodeObj[currentConnection.sourceId].config.style
+    // nodeObj[currentConnection.sourceId].config.feId = nodeObj[currentConnection.sourceId].id
+    // nodeObj[currentConnection.sourceId].config.id = id
+    // configData.push(nodeObj[currentConnection.sourceId].config)
+    // for (; ;) {
+    //   let currentNode = nodeObj[currentConnection.targetId]
+    //   //待优化 here
+    //   //id是整个流程的id feId是每一个step的id
+    //   currentNode.config.id = id
+    //   currentNode.config.feId = currentNode.id
+    //   // delete currentNode.config.style
+    //   configData.push(currentNode.config)
+    //   if (currentConnection.targetId === "end") {
+    //     break
+    //   }
+    //   if(currentNode.config.actualType === "if" && currentNode.config.returnValue ) {
+    //     nextStartId = currentNode.config.feId
+    //     break
+    //   }
+    //   currentConnection = connectionObj[currentConnection.targetId]
+    //   //处理没有end的情况
+    //   if(!currentConnection){
+    //     break
+    //   }
+    // }
 
+    // console.log(configData)
+    let nodeObj = nodes.reduce((before, current) => { before[current.id] = current; return before; }, {})
+    let connectionObj = connections.reduce((before, current) => {
+      if (current.data && current.data.condition) {
+        if (!before[current.sourceId]) {
+          before[current.sourceId] = {}
+        }
+        before[current.sourceId][current.data.condition] = current.targetId
+        before[current.sourceId].sourceId = current.sourceId
+      } else {
+        before[current.sourceId] = current;
+      } return before;
+    }, {})
+    console.log({ nodes: nodeObj, connections: connectionObj })
     let returnData = await fetch('/setKey', {
-      body: JSON.stringify({ configData }),
+      body: JSON.stringify({ nodes: nodeObj, connections: connectionObj }),
       headers: {
         'content-type': 'application/json'
       },
       method: 'POST',
     }).then(response => response.json())
-
-    // this.getData = 
+    console.log(returnData)
+    this.currentId = returnData.id
     this.setState({
       isRunning: true,
       result: []
@@ -370,8 +396,8 @@ export default class App extends React.Component {
     nodes[curIndex].config.data = Object.assign({}, nodes[curIndex].config.data, data)
     this.setState({
       nodes: nodes
-    },()=>{message.success('保存成功')})
-  
+    }, () => { message.success('保存成功') })
+
   }
   _handleDeleteNode = () => {
     const { curBlock, curIndex, nodes } = this.state
