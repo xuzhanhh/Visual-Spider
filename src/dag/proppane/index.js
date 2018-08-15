@@ -5,6 +5,7 @@ import InputProp from './input'
 import ClickProp from './click'
 import SleepProp from './sleep'
 import IfProp from './if'
+import ForProp from './for'
 import * as PropTypes from 'prop-types'
 import { Button, message } from 'antd'
 export default class PropPane extends React.Component {
@@ -46,7 +47,10 @@ export default class PropPane extends React.Component {
            case 'sleep':
                 return <SleepProp {...proppaneProp}/> 
            case 'if':
+           case 'evaluate':
                 return <IfProp {...proppaneProp}/> 
+           case 'for':
+                return <ForProp {...proppaneProp}/> 
             default:
                 return null
         }

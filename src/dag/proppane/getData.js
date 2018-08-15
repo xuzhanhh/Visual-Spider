@@ -36,7 +36,7 @@ export default class GetDataProp extends React.Component {
     }
     changeKey = (e)=>{
         // tslint:disable-next-line:no-console
-        // console.log(e)
+        // console.log(e)git config --global user.name "username"
         this.setState({
             key: e
         })

@@ -18,7 +18,8 @@ import { setGlobal, theme } from "./styles";
 import ReactDAG, { DefaultNode } from "react-dag";
 import NodeType1 from "./components/NodeType1/wrapper";
 import NodeType2 from "./components/NodeType2";
-import NodeType3 from "./components/NodeType3/wrapper";
+import IfType from "./components/IfType/wrapper";
+import ForType from "./components/ForType/wrapper";
 import ErrorType from "./components/ErrorType/wrapper";
 import EndType from "./components/EndType";
 import StartType from "./components/StartType";
@@ -86,7 +87,7 @@ const nodeType2Styles = css({
   backgroundColor: theme.main.colors.teal,
 });
 
-const nodeType3Styles = css({
+const IfTypeStyles = css({
   backgroundColor: theme.main.colors.yellow,
 });
 
@@ -121,7 +122,8 @@ setGlobal();
 // };
 const typeToComponentMap = {
   action: NodeType2,
-  condition: NodeType3,
+  condition: IfType,
+  for: ForType,
   sink: NodeType1,
   source: DefaultNode,
   transform: NodeType1,
@@ -327,40 +329,7 @@ export default class App extends React.Component {
       document.getElementById(item.id).style.border = ""
       document.getElementById(item.id).style.background = ""
     })
-
-    // let nodeObj = nodes.reduce((before, current) => { before[current.id] = current; return before; }, {})
-    // let connectionObj = connections.reduce((before, current) => { before[current.sourceId] = current; return before; }, {})
-    // const id = uuidv4()
-    // this.currentId = id
-    // let configData = []
-    // let nextStartId = null
-    // let currentConnection = connectionObj[connectionObj['start'].sourceId]
-    // // delete nodeObj[currentConnection.sourceId].config.style
-    // nodeObj[currentConnection.sourceId].config.feId = nodeObj[currentConnection.sourceId].id
-    // nodeObj[currentConnection.sourceId].config.id = id
-    // configData.push(nodeObj[currentConnection.sourceId].config)
-    // for (; ;) {
-    //   let currentNode = nodeObj[currentConnection.targetId]
-    //   //待优化 here
-    //   //id是整个流程的id feId是每一个step的id
-    //   currentNode.config.id = id
-    //   currentNode.config.feId = currentNode.id
-    //   // delete currentNode.config.style
-    //   configData.push(currentNode.config)
-    //   if (currentConnection.targetId === "end") {
-    //     break
-    //   }
-    //   if(currentNode.config.actualType === "if" && currentNode.config.returnValue ) {
-    //     nextStartId = currentNode.config.feId
-    //     break
-    //   }
-    //   currentConnection = connectionObj[currentConnection.targetId]
-    //   //处理没有end的情况
-    //   if(!currentConnection){
-    //     break
-    //   }
-    // }
-
+    
     // console.log(configData)
     let nodeObj = nodes.reduce((before, current) => { before[current.id] = current; return before; }, {})
     let connectionObj = connections.reduce((before, current) => {

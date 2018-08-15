@@ -30,7 +30,7 @@ export default class Sider extends React.Component {
         onClick('condition', e.key)
         break
       case 'for':
-        onClick('transform', e.key)
+        onClick('for', e.key)
         break
     }
 

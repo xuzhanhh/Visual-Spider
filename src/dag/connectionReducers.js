@@ -72,7 +72,7 @@ export const conditionConnectionEncoder = (
 
   if (
     sourceNode.config &&
-    sourceNode.config.type === "condition" &&
+    (sourceNode.config.type === "condition" ||sourceNode.config.type === "for")&&
     connObj.sourceId.indexOf("bottom") === -1 &&
     connObj.sourceId.indexOf("right") === -1
   ) {
@@ -107,7 +107,7 @@ export const conditionConnectionDecoder = (
 
   if (
     sourceNode.config &&
-    sourceNode.config.type === "condition"
+    (sourceNode.config.type === "condition" ||sourceNode.config.type === "for")
   ) {
     if (connObj.sourceId.indexOf("right") !== -1) {
       newConnObj.sourceId = `${connObj.sourceId.slice(
