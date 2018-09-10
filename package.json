@@ -16,7 +16,7 @@
     "react-scripts-ts": "2.17.0"
   },
   "scripts": {
-    "start": "react-app-rewired start --scripts-version react-scripts-ts",
+    "start": "PORT=3003 react-app-rewired start --scripts-version react-scripts-ts",
     "build": "react-app-rewired build --scripts-version react-scripts-ts",
     "test": "react-app-rewired test --env=jsdom --scripts-version react-scripts-ts",
     "eject": "react-scripts-ts eject"

@@ -29,35 +29,43 @@ export default class PropPane extends React.Component {
         // tslint:disable-next-line:no-console
         // console.log('config', config)
         const actualType = config.actualType
-        const proppaneProp = {
+        let proppaneProp = {
             id: id,
-            onSave:this.handleSave,
-            originProps: config.data? config.data: {},
+            onSave: this.handleSave,
+            originProps: config.data ? config.data : undefined,
             // config: config
         }
         switch (actualType) {
             case 'openPage':
-                return <OpenPageProp {...proppaneProp}/>
+                return <OpenPageProp {...proppaneProp} />
             case 'getData':
-                return <GetDataProp {...proppaneProp}/>
+                return <GetDataProp {...proppaneProp} />
             case 'input':
-                return <InputProp {...proppaneProp}/>
-           case 'click':
-                return <ClickProp {...proppaneProp}/> 
-           case 'sleep':
-                return <SleepProp {...proppaneProp}/> 
-           case 'if':
-           case 'evaluate':
-                return <IfProp {...proppaneProp}/> 
-           case 'for':
-                return <ForProp {...proppaneProp}/> 
+                return <InputProp {...proppaneProp} />
+            case 'click':
+                //填充默认数据
+                if (!proppaneProp.originProps) {
+                    proppaneProp.originProps = JSON.parse(JSON.stringify(ClickProp.defaultProps))
+                }
+                return <ClickProp {...proppaneProp} />
+            case 'sleep':
+                return <SleepProp {...proppaneProp} />
+            case 'if':
+            case 'evaluate':
+                return <IfProp {...proppaneProp} />
+            case 'for':
+                //填充默认数据
+                if (!proppaneProp.originProps) {
+                    proppaneProp.originProps = JSON.parse(JSON.stringify(ForProp.defaultProps))
+                }
+                return <ForProp {...proppaneProp} />
             default:
                 return null
         }
     }
-    handleSave = (data)=>{
+    handleSave = (data) => {
         const { id } = this.props
-        this.props.onSave(id,data)
+        this.props.onSave(id, data)
         // onSave&&onSave(id, data)
     }
 }
