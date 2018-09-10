@@ -1,6 +1,4 @@
 import React from 'react'
-import { Input, Button } from 'antd'
-const { TextArea } = Input;
 import PropPaneBase from './proppaneBase'
 
 export default class ForProp extends PropPaneBase {

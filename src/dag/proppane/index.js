@@ -37,11 +37,21 @@ export default class PropPane extends React.Component {
         }
         switch (actualType) {
             case 'openPage':
+                if (!proppaneProp.originProps) {
+                    proppaneProp.originProps = JSON.parse(JSON.stringify(OpenPageProp.defaultProps))
+                }
                 return <OpenPageProp {...proppaneProp} />
             case 'getData':
+                //填充默认数据
+                if (!proppaneProp.originProps) {
+                    proppaneProp.originProps = JSON.parse(JSON.stringify(GetDataProp.defaultProps))
+                }
                 return <GetDataProp {...proppaneProp} />
             case 'input':
-                return <InputProp {...proppaneProp} />
+                if (!proppaneProp.originProps) {
+                    proppaneProp.originProps = JSON.parse(JSON.stringify(InputProp.defaultProps))
+                }
+                <InputProp {...proppaneProp} />
             case 'click':
                 //填充默认数据
                 if (!proppaneProp.originProps) {
@@ -49,9 +59,16 @@ export default class PropPane extends React.Component {
                 }
                 return <ClickProp {...proppaneProp} />
             case 'sleep':
+                //填充默认数据
+                if (!proppaneProp.originProps) {
+                    proppaneProp.originProps = JSON.parse(JSON.stringify(SleepProp.defaultProps))
+                }
                 return <SleepProp {...proppaneProp} />
             case 'if':
             case 'evaluate':
+                if (!proppaneProp.originProps) {
+                    proppaneProp.originProps = JSON.parse(JSON.stringify(IfProp.defaultProps))
+                }
                 return <IfProp {...proppaneProp} />
             case 'for':
                 //填充默认数据

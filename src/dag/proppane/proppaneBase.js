@@ -1,6 +1,7 @@
 import React from 'react'
-import { Button, Input } from 'antd'
+import { Button, Input, Select } from 'antd'
 const { TextArea } = Input;
+const { Option } = Select;
 
 export default class PropPaneBase extends React.Component {
     constructor(props) {
@@ -61,7 +62,20 @@ export default class PropPaneBase extends React.Component {
                 return this.renderInput(params, index)
             case 'textArea':
                 return this.renderTextArea(params, index)
+            case 'select':
+                return this.renderSelect(params, index)
         }
+    }
+    renderSelect = (params, index) => {
+        const { key, desc, data, placeholder = "", options } = params
+        return <div key={index}>
+            {desc}:    <Select value={data} style={{ width: 150 }} onChange={(e) => this.changeValueDirect(key, e)}>
+                {
+                    options.map(item => <Option key={item.value} value={item.value}>{item.name}</Option>)
+                }
+            </Select>
+        </div>
+
     }
 
     renderInput = (params, index) => {
