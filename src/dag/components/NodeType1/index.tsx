@@ -69,7 +69,8 @@ export default class NodeType1 extends DefaultNode{
     }
   }
   public render() {
-    const config = this.props.config;
+    // const config = this.props.config;
+    const { config, click, cKey, id } = this.props
     // const  click  = this.props.click;
     let style = {};
     if (config) {
@@ -77,6 +78,7 @@ export default class NodeType1 extends DefaultNode{
     }
     return (
       <div
+        onClick = {()=>click(id, cKey)}
         id={this.props.id}
         className={`${nodeStyles}`}
         style={style}

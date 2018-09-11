@@ -66,7 +66,9 @@ export default class ErrorType extends DefaultNode{
     }
   }
   public render() {
-    const config = this.props.config;
+    // const config = this.props.config;
+    const { config, click, cKey, id } = this.props
+
     // const  click  = this.props.click;
     let style = {};
     if (config) {
@@ -77,6 +79,7 @@ export default class ErrorType extends DefaultNode{
         id={this.props.id}
         className={`${nodeStyles}`}
         style={style}
+        onClick = {()=>click(id, cKey)}
         // onClick={click(this.props.id)}
       >
         <div className={`${nodeWrapperStyles}`}>

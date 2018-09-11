@@ -2,7 +2,7 @@ import * as React from "react";
 
 import { endPointStyles, nodeWrapperStyles } from "../NodeType1";
 
-import {DefaultNode} from "react-dag";
+import { DefaultNode } from "react-dag";
 import { css } from "glamor";
 import { getSettings } from "../../settings/dag-settings";
 import { theme } from "../../styles";
@@ -75,13 +75,14 @@ export default class NodeType3 extends DefaultNode {
   }
 
   public render() {
-    const config = this.props.config;
+    const { config, click, cKey, id } = this.props
     let style = {};
     if (config) {
       style = config.style;
     }
     return (
       <div
+        onClick={() => click(id, cKey)}
         id={this.props.id}
         className={`${nodeStyles}`}
         style={style}

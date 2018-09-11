@@ -1,12 +1,23 @@
 import { Menu, Icon } from 'antd';
-import React from 'react'
+// import React from 'react'
+import * as React from 'react'
 const SubMenu = Menu.SubMenu;
-const MenuItemGroup = Menu.ItemGroup;
+// const MenuItemGroup = Menu.ItemGroup;
 
-export default class Sider extends React.Component {
-  handleClick = (e) => {
-    // console.log('click ', e);
-    // alert(e.key)
+interface MenuProps {
+  onClick: Function,
+}
+
+interface testInterface{
+  key: string
+}
+
+export default class Sider extends React.Component<MenuProps, object> {
+  constructor(props: MenuProps) {
+    super(props)
+  }
+
+  handleClick = (e:testInterface) => {
     const { onClick } = this.props
     switch (e.key) {
       case 'openPage':

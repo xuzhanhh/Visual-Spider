@@ -16,11 +16,11 @@ import { onConnectionEventHandler, onEndPointClick } from "./eventHandlers";
 import { setGlobal, theme } from "./styles";
 
 import ReactDAG, { DefaultNode } from "react-dag";
-import NodeType1 from "./components/NodeType1/wrapper";
+import NodeType1 from "./components/NodeType1";
 import NodeType2 from "./components/NodeType2";
-import IfType from "./components/IfType/wrapper";
-import ForType from "./components/ForType/wrapper";
-import ErrorType from "./components/ErrorType/wrapper";
+import IfType from "./components/IfType";
+import ForType from "./components/ForType";
+import ErrorType from "./components/ErrorType";
 import EndType from "./components/EndType";
 import StartType from "./components/StartType";
 import { css, before } from "glamor";
