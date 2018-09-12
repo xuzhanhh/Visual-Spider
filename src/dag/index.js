@@ -115,11 +115,7 @@ const registerTypes = {
   },
   endpoints: {},
 };
-const eventListeners = {
-  click: (jsPlumbObject) => { console.log('click'); onEndPointClick(jsPlumbObject) },
-  connection: onConnectionEventHandler,
-  endpointClick: (jsPlumbObject) => { console.log('endpointClick'); onEndPointClick(jsPlumbObject) },
-};
+// const 
 
 setGlobal();
 // const typeToComponentMap = {
@@ -183,12 +179,23 @@ data.nodes = data.nodes.map(node => {
   };
 });
 export default class App extends React.Component {
+  constructor(props) {
+    super(props)
+    this.eventListeners = {
+      click: (jsPlumbObject) => { console.log('click'); onEndPointClick(jsPlumbObject) },
+      connection: (connObj) => { onConnectionEventHandler(connObj, this.node2Connection) },
+      endpointClick: (jsPlumbObject) => { console.log('endpointClick'); onEndPointClick(jsPlumbObject) },
+    };
+  }
+
+
   state = {
     connections: data.connections,
     nodes: data.nodes,
     zoom: 1,
     isRunning: false,
     result: [],
+    node2Connection: {},
   };
   addNode = (RectType, ActualType) => {
     const generateNodeConfig = (RectType, ActualType) => ({
@@ -203,8 +210,17 @@ export default class App extends React.Component {
       nodes: [...this.state.nodes, generateNodeConfig(RectType, ActualType)],
     });
   };
+  node2Connection = (startId, endId, connectionSVG) => {
+    let { node2Connection } = this.state
+    node2Connection[`${startId}-${endId}`] = connectionSVG
+    this.setState({
+      node2Connection
+    })
+  }
 
-  changeData = (connections = data.connections, nodes=data.nodes) => {
+
+
+  changeData = (connections = data.connections, nodes = data.nodes) => {
     // data.connections = connections
     // data.nodes = nodes
     this.setState({
@@ -222,7 +238,8 @@ export default class App extends React.Component {
     }
   };
   render() {
-    const { curBlock, curIndex, isRunning, result } = this.state
+    const { curBlock, curIndex, isRunning, result, node2Connection } = this.state
+    console.log('node2Connection', node2Connection)
     return [
       <h1 className={`${headerStyles}`} key="title">
         Visible spider with React DAG
@@ -273,7 +290,7 @@ export default class App extends React.Component {
               transformConnectionEncoder,
               conditionConnectionEncoder,
             ]}
-            eventListeners={eventListeners}
+            eventListeners={this.eventListeners}
             registerTypes={registerTypes}
             onChange={({ nodes, connections }) => {
               this.setState({ nodes, connections }); // un-necessary cycle??
@@ -302,6 +319,8 @@ export default class App extends React.Component {
     ];
   }
   _getResponse = async () => {
+    const { node2Connection } = this.state
+
     let id = this.currentId
     let returnData = await fetch('/getData', {
       body: JSON.stringify({ id }),
@@ -325,6 +344,13 @@ export default class App extends React.Component {
         if (retData !== 'error') {
           // document.getElementById(feId).style.border = "2px solid green"
           // document.getElementById(feId).style.background = "repeating-linear-gradient(45deg,#fb3,#fb3 15px,#58a 0,#58a 30px);"
+          // console.log(retData)
+          if (retData.afterFeId.length > 0) {
+            let svgElement = node2Connection[`${feId}-${retData.afterFeId}`]
+            if (svgElement) {
+              svgElement.innerHTML = ' <animate attributeName="stroke-dasharray" attributeType="XML" calcMode="linear" keyTimes="0; .5; 1" values="2 2; 6 6; 7 7;" begin="0s" dur="1s" repeatCount="indefinite" fill="freeze"></animate>'
+            }
+          }
           document.getElementById(feId).style.border = "2px solid #58c374"
           document.getElementById(feId).style.background = "#58c374"
           document.getElementById(feId).style.backgroundImage = "repeating-linear-gradient(45deg,hsla(0,0%,100%,.1),hsla(0,0%,100%,.1) 15px,transparent 0,transparent 30px),repeating-linear-gradient(-45deg,hsla(0,0%,100%,.1),hsla(0,0%,100%,.1) 15px,transparent 0,transparent 30px)"
