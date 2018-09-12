@@ -44,6 +44,7 @@ export default class NodeType1 extends DefaultNode{
 
   public componentDidMount() {
     const { transformSource } = getSettings() as any;
+    console.log('!!!!!!!', this.props.id)
     const initConfig = {
       endPointParams: [
         {
@@ -61,6 +62,7 @@ export default class NodeType1 extends DefaultNode{
         anchor: "ContinuousLeft",
         dropOptions: { hoverClass: "drag-hover" },
         isTarget: false,
+        uuid: `${this.props.id}-end`
       },
       nodeId: this.props.id,
     };

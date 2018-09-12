@@ -6,20 +6,21 @@ const defaultConnectionStyle = {
   hoverPaintStyle: {
     dashstyle: "solid",
     lineWidth: 4,
-    strokeStyle: "#58b7f6",
-    strokeWidth: 3,
+    stroke: "green",
+    strokeWidth: 8,
   },
   paintStyle: {
     lineWidth: 2,
     outlineColor: "transparent",
     outlineWidth: 4,
-    strokeStyle: "#4e5568",
-    strokeWidth: 3,
+    stroke: "yellow",
+    strokeWidth: 8,
   },
 };
 
 export const defaultSettings = Object.assign(
   {
+    //endpoint 的设置
     ConnectionOverlays: [
       [
         "Arrow",
@@ -31,11 +32,12 @@ export const defaultSettings = Object.assign(
         },
       ],
     ],
+    //连线的设置
     Connector: [
       "Flowchart",
       {
         alwaysRespectStubs: true,
-        cornerRadius: 20,
+        cornerRadius: 100,
         midpoint: 0.2,
         stub: [10, 15],
       },
@@ -48,22 +50,22 @@ export const defaultSettings = Object.assign(
   /* tslint:enable */
 );
 
-export const connectorStyle = {
-  lineWidth: 2,
-  radius: 5,
-  stroke: "black",
-  strokeWidth: 2,
-};
+// export const connectorStyle = {
+//   lineWidth: 2,
+//   radius: 5,
+//   stroke: "green",
+//   strokeWidth: 2,
+// };
 
 export const commonSettings = {
   endpoint: "Dot",
   maxConnections: -1, // -1 means unlimited connections
   paintStyle: {
     connectorStyle: defaultConnectionStyle.paintStyle,
-    fill: "black",
+    fill: "#456",
     lineWidth: 3,
     radius: 5,
-    stroke: "black",
+    stroke: "#456",
   },
 };
 export const sourceSettings = {
@@ -98,13 +100,21 @@ export const conditionBottomEndpoint = {
 
 export const dottedConnectionStyle = {
   paintStyle: {
-    dashstyle: "2 4",
-    lineWidth: 2,
-    outlineColor: "transparent",
-    outlineWidth: 4,
-    strokeStyle: "#0099ff",
-    strokeWidth: 2,
+    dashstyle: "4 4",
+    lineWidth: 10,
+    // outlineColor: "red",
+    // outlineWidth: 4,
+    // strokeStyle: "#0099ff",
+    stroke:'#0b639e',
+    strokeWidth: 1,
   },
+  hoverPaintStyle:{
+    dashstyle:"2 2",
+    // stroke:'black'
+    strokeWidth: 4,
+
+  },
+  cssClass:"dotted-normal"
 };
 
 export const selectedConnectionStyle = {
@@ -113,7 +123,9 @@ export const selectedConnectionStyle = {
     lineWidth: 4,
     outlineColor: "transparent",
     outlineWidth: 4,
-    strokeStyle: "#58b7f6",
+    stroke: "#58b7f6",
+    strokeWidth: 3,
+
   },
 };
 

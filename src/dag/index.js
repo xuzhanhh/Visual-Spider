@@ -34,6 +34,16 @@ import PropPane from './proppane/index'
 /* tslint:disable */
 const uuidv4 = require("uuid/v4");
 
+
+/* 
+
+添加svg箭头动画
+document.getElementsByClassName('dotted-normal')[0].children[0].innerHTML = ' <animate attributeName="stroke-dasharray" attributeType="XML" calcMode="linear" keyTimes="0; .5; 1" values="2 2; 6 6; 7 7;" begin="0s" dur="1s" repeatCount="indefinite" fill="freeze"></animate>'
+
+*/
+
+
+
 const columns = [{
   title: '时间',
   dataIndex: 'time',
@@ -106,9 +116,9 @@ const registerTypes = {
   endpoints: {},
 };
 const eventListeners = {
-  click: onEndPointClick,
+  click: (jsPlumbObject) => { console.log('click'); onEndPointClick(jsPlumbObject) },
   connection: onConnectionEventHandler,
-  endpointClick: onEndPointClick,
+  endpointClick: (jsPlumbObject) => { console.log('endpointClick'); onEndPointClick(jsPlumbObject) },
 };
 
 setGlobal();
@@ -193,6 +203,17 @@ export default class App extends React.Component {
       nodes: [...this.state.nodes, generateNodeConfig(RectType, ActualType)],
     });
   };
+
+  changeData = (connections = data.connections, nodes=data.nodes) => {
+    // data.connections = connections
+    // data.nodes = nodes
+    this.setState({
+      connections,
+      nodes
+    })
+    // console.log(data)
+  }
+
   setZoom = (zoomIn) => {
     if (zoomIn) {
       this.setState({ zoom: this.state.zoom + 0.2 });
@@ -236,7 +257,7 @@ export default class App extends React.Component {
       </Button>
       </div>,
       <div className="content">
-        <Sider onClick={this.addNode}></Sider>
+        <Sider onClick={this.addNode} onAddData={this.changeData}></Sider>
         <div className="dag-area">
           <ReactDAG
             className={`${dagWrapperStyles}`}
@@ -308,7 +329,7 @@ export default class App extends React.Component {
           document.getElementById(feId).style.background = "#58c374"
           document.getElementById(feId).style.backgroundImage = "repeating-linear-gradient(45deg,hsla(0,0%,100%,.1),hsla(0,0%,100%,.1) 15px,transparent 0,transparent 30px),repeating-linear-gradient(-45deg,hsla(0,0%,100%,.1),hsla(0,0%,100%,.1) 15px,transparent 0,transparent 30px)"
         }
-        if (feId === 'end' && retData ['data'] === 'success') {
+        if (feId === 'end' && retData['data'] === 'success') {
           clearInterval(this.intervalId)
           // this.setState({
           //   isRunning: false
@@ -329,7 +350,7 @@ export default class App extends React.Component {
       document.getElementById(item.id).style.border = ""
       document.getElementById(item.id).style.background = ""
     })
-    
+
     // console.log(configData)
     let nodeObj = nodes.reduce((before, current) => { before[current.id] = current; return before; }, {})
     let connectionObj = connections.reduce((before, current) => {
